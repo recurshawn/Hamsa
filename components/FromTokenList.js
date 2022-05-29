@@ -15,12 +15,12 @@ import {
     HStack
 } from '@chakra-ui/react'
 
-function TransitionExample({ tokenList, setFromTokenAddress }) {
+function TransitionExample({ tokenList, setFromTokenAddress, setFromTokenDecimal }) {
     const [selectedToken, setSelectedToken] = useState()
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
-        tokenList &&  setSelectedToken(tokenList[0])
+        tokenList && setSelectedToken(tokenList[0])
     })
     return (
         <>
@@ -46,7 +46,7 @@ function TransitionExample({ tokenList, setFromTokenAddress }) {
                         <Menu>
                             {(tokenList) ?
                                 tokenList.map(token => {
-                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address) }}>
+                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address); setFromTokenDecimal(token.decimals); }}>
                                         <Image
                                             boxSize='2rem'
                                             borderRadius='full'
@@ -67,7 +67,7 @@ function TransitionExample({ tokenList, setFromTokenAddress }) {
     )
 }
 
-export default function FromTokenList({ sourceChainId, destinationChainId, setFromTokenAddress }) {
+export default function FromTokenList({ sourceChainId, destinationChainId, setFromTokenAddress, setFromTokenDecimal }) {
 
     const [tokenList, setTokenList] = useState(null);
 
@@ -84,19 +84,19 @@ export default function FromTokenList({ sourceChainId, destinationChainId, setFr
         const json = await tokenList.json();
         //return json;
         setTokenList(json.result)
-        
+
         console.log(json.result);
     }
 
     useEffect(() => {
         console.log(sourceChainId, destinationChainId)
         getTokenList();
-        
+
     }, [sourceChainId, destinationChainId]);
 
     return (
         <div>
-            <TransitionExample tokenList={tokenList} setFromTokenAddress={setFromTokenAddress} />
+            <TransitionExample tokenList={tokenList} setFromTokenAddress={setFromTokenAddress} setFromTokenDecimal={setFromTokenDecimal} />
         </div>
     )
 }

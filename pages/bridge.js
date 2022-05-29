@@ -6,8 +6,12 @@ import Navbar from './components/Navbar'
 import FromTokenList from '../components/FromTokenList';
 import ToTokenList from '../components/ToTokenList';
 import SendingAmount from '../components/SendingAmount'
+import { ethers } from 'ethers';
 
 export default function PublicPage() {
+
+    const [signer, setSigner] = useState();
+    const [provider, setProvider] = useState();
 
     const [walletAddress, setWalletAddress] = useState();
     const [sourceChainId, setSourceChainId] = useState();
@@ -15,6 +19,8 @@ export default function PublicPage() {
     const [fromTokenAddress, setFromTokenAddress] = useState();
     const [toTokenAddress, setToTokenAddress] = useState();
     const [sendingAmount, setSendingAmount] = useState();
+    const [fromTokenDecimal, setFromTokenDecimal] = useState();
+    const [toTokenDecimal, setToTokenDecimals] = useState();
     const [quote, setQuote] = useState(null);
     const uniqueRoutesPerBridge = true;
     const sort = 'output';
@@ -59,8 +65,18 @@ export default function PublicPage() {
         return json;
     }
 
-    const getApproval = async () => {
+    async function getApprovalTransactionData(chainId, owner, allowanceTarget, tokenAddress, amount) {
+        const response = await fetch(`https://api.socket.tech/v2/approval/build-tx?chainID=${chainId}&owner=${owner}&allowanceTarget=${allowanceTarget}&tokenAddress=${tokenAddress}&amount=${amount}`, {
+            method: 'GET',
+            headers: {
+                'API-KEY': API_KEY,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
 
+        const json = await response.json();
+        return json;
     }
 
     const getTxData = async () => {
@@ -75,17 +91,54 @@ export default function PublicPage() {
         if (quote) {
             const route = quote[0];
 
+            const { allowanceTarget, approvalTokenAddress, minimumApprovalAmount, owner } = route.userTxs[0].approvalData;
+
+            const allowance = await checkAllowance(sourceChainId, owner, allowanceTarget, approvalTokenAddress);
+
+            const allowanceValue = allowance.result?.value;
+
+            if (minimumApprovalAmount > allowanceValue) {
+                // Approval tx data fetched
+                const approvalTransactionData = await getApprovalTransactionData(sourceChainId, owner, allowanceTarget, approvalTokenAddress, minimumApprovalAmount);
+
+                const gasPrice = await provider.getGasPrice();
+
+                const gasEstimate = await provider.estimateGas({
+                    from: signer.address,
+                    to: approvalTransactionData.result?.to,
+                    value: '0x00',
+                    data: approvalTransactionData.result?.data,
+                    gasPrice: gasPrice
+                });
+
+                const tx = await signer.sendTransaction({
+                    from: approvalTransactionData.result?.from,
+                    to: approvalTransactionData.result?.to,
+                    value: '0x00',
+                    data: approvalTransactionData.result?.data,
+                    gasPrice: gasPrice,
+                    gasLimit: gasEstimate
+                });
+
+                // Initiates approval transaction on user's frontend which user has to sign
+                const receipt = await tx.wait();
+
+                console.log('Approval Transaction Hash :', receipt.transactionHash);
+            }
         }
     }
 
-    const requestWallet = async () => {
+    useEffect(() => {
         if (window.ethereum) {
             console.log('Web3 wallet detected');
             try {
-                const accounts = await window.ethereum.request({
-                    method: "eth_requestAccounts",
-                });
-                setWalletAddress(accounts[0])
+                const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                // Prompt user for account connections
+                await provider.send("eth_requestAccounts", []);
+                const signer = provider.getSigner();
+                setSigner(signer);
+                setProvider(provider);
+                setWalletAddress(await signer.getAddress());
             }
             catch (e) {
                 console.log('Error', e);
@@ -94,7 +147,8 @@ export default function PublicPage() {
         else {
             alert('No wallet detected. Please download a web3 wallet on a supported browser');
         }
-    }
+    }, [])
+
 
     return (
         <div>
@@ -111,7 +165,7 @@ export default function PublicPage() {
                 <InputGroup>
                     <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setSendingAmount(e.target.value) }}></Input>
                     <InputRightElement width='9rem'>
-                        <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
+                        <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} setFromTokenDecimal={setFromTokenDecimal} />
                     </InputRightElement>
                 </InputGroup>
 
@@ -120,13 +174,13 @@ export default function PublicPage() {
                 <InputGroup>
                     <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setReceivingAmount(e.target.value) }}></Input>
                     <InputRightElement width='9rem'>
-                        <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
+                        <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} setToTokenDecimal={setToTokenDecimal} />
                     </InputRightElement>
                 </InputGroup>
 
 
-                <Button colorScheme='teal' size='sm' onClick={getQuote}>
-                    Button
+                <Button colorScheme='teal' size='sm' onClick={bridgeFunds}>
+                    Proceed
                 </Button>
             </Container>
         </div >
