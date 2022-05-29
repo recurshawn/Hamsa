@@ -24,8 +24,6 @@ import {
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 
-
-
 export default function Chains({ setSourceChainId, setDestinationChainId }) {
 
     const [chains, setChains] = useState(null);

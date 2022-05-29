@@ -11,36 +11,3 @@
   box-sizing: border-box;
 }
 
-.topnav {
-  overflow: hidden;
-  background-color: #333;
-}
-
-.topnav a {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-}
-
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.topnav a.active {
-  background-color: #04AA6D;
-  color: white;
-}
-/* body {
-  background-color: rgb(241, 241, 241) !important;
-} */
-.card-bridge {
-  padding: 30px;
-  border-radius: 20px;
-  /* border: 1px solid rgb(126, 126, 126)  ; */
-  background-color: white;
-
-}
