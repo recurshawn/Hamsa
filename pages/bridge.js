@@ -2,6 +2,8 @@ import { useRouter } from 'next/router'
 import { useState } from 'react';
 import { Container } from '@chakra-ui/react'
 import Chains from '../components/Chains'
+import FromTokenList from '../components/FromTokenList';
+import ToTokenList from '../components/ToTokenList';
 
 
 export default function PublicPage() {
@@ -38,6 +40,8 @@ export default function PublicPage() {
 
             <Container maxW='2xl' bg='blue.600' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
+                <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} />
+                <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} />
             </Container>
         </div >
     );
