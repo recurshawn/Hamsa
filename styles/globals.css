@@ -11,3 +11,15 @@
   box-sizing: border-box;
 }
 
+input:focus {
+  outline: none !important;
+}
+
+.scrollable {
+  overflow: auto;
+  height: 600px;
+}
+
+.pseudo-btn {
+  border-color: grey !important;
+}
