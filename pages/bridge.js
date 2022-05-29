@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react';
 import { Container } from '@chakra-ui/react'
 import Chains from '../components/Chains'
-
+import Navbar from './components/Navbar'
 
 export default function PublicPage() {
 
@@ -30,13 +30,9 @@ export default function PublicPage() {
 
     return (
         <div>
-            <div className="topnav">
-                <a className="active" href="#home" onClick={requestWallet}>Connect Wallet</a>
-
-                <p> {walletAddress}</p>
-            </div>
-
-            <Container maxW='2xl' bg='blue.600' centerContent>
+           
+            <Navbar connectWallet={requestWallet} walletAddress={walletAddress}/>
+            <Container maxW='2xl' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
             </Container>
         </div >

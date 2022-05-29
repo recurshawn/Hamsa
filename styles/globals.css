@@ -34,3 +34,13 @@
   background-color: #04AA6D;
   color: white;
 }
+/* body {
+  background-color: rgb(241, 241, 241) !important;
+} */
+.card-bridge {
+  padding: 30px;
+  border-radius: 20px;
+  /* border: 1px solid rgb(126, 126, 126)  ; */
+  background-color: white;
+
+}

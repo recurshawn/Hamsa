@@ -1,3 +1,4 @@
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 import {
     Menu,
     MenuButton,
@@ -9,7 +10,17 @@ import {
     MenuDivider,
     Button,
     ChevronDownIcon,
-    Image
+    Image,
+    HStack,
+    Text,
+    Heading,
+    Grid,
+    GridItem,
+    Center,
+    Box,
+    Input,
+    InputGroup,
+    InputRightElement
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 
@@ -18,8 +29,11 @@ import { useEffect, useState } from 'react';
 export default function Chains({ setSourceChainId, setDestinationChainId }) {
 
     const [chains, setChains] = useState(null);
+    const [activeFromChain, setActiveFromChain] = useState({});
+    const [activeToChain, setActiveToChain] = useState({});
 
     async function getChains() {
+
         const chains = await fetch('https://api.socket.tech/v2/supported/chains', {
             method: 'GET',
             headers: {
@@ -30,63 +44,129 @@ export default function Chains({ setSourceChainId, setDestinationChainId }) {
         })
 
         const json = await chains.json();
-        //return json;
+
         setChains(json.result)
+        setActiveFromChain(json.result[0])
+        setSourceChainId(json.result[0].chainId)
+
+        setActiveToChain(json.result[1])
+        setDestinationChainId(json.result[1].chainId)
+
         console.log(json.result);
     }
 
     useEffect(() => {
-        const chainData = getChains();
-        console.log(chainData);
+        getChains();
 
-        return () => {
-            console.log("This will be logged on unmount");
-        }
     }, [])
 
     return (
-        <Menu>
-            <MenuButton as={Button} >
-                Sending chains
-            </MenuButton>
-            <MenuList>
-                {(chains) ?
-                    chains.map((chain) => {
-                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setSourceChainId(chain.chainId) }}>
-                            <Image
-                                boxSize='2rem'
-                                borderRadius='full'
-                                src={chain.icon}
-                                alt={chain.name}
-                                mr='12px'
-                            />
-                            <span>{chain.name}</span>
-                        </MenuItem>
-                    })
-                    : <div> </div>}
-            </MenuList>
+        <>
+            <Box className='card-bridge'>
+                <Grid templateColumns='repeat(5, 1fr)' gap={1}>
 
-            <MenuButton as={Button} >
-                Receiving chains
-            </MenuButton>
-            <MenuList>
-                {(chains) ?
-                    chains.map((chain) => {
-                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setDestinationChainId(chain.chainId) }}>
-                            <Image
-                                boxSize='2rem'
-                                borderRadius='full'
-                                src={chain.icon}
-                                alt={chain.name}
-                                mr='12px'
-                            />
-                            <span>{chain.name}</span>
-                        </MenuItem>
-                    })
-                    : <div> </div>}
+                    <GridItem colSpan={2}>
+                        <Heading size='sm'>Send from:</Heading>
+                    </GridItem>
+                    <GridItem>
+
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <Heading size='sm'>Receive on:</Heading>
+
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <Menu>
+                            <MenuButton as={Button} >
+
+                                {(activeFromChain) ? <HStack spacing={0}><Image
+
+                                    borderRadius='full'
+                                    src={activeFromChain.icon}
+                                    alt={activeFromChain.name}
+                                    mr='12px'
+                                /> <span>{activeFromChain.name}</span></HStack> : 'Loading...'}
+                            </MenuButton>
+                            <MenuList>
+                                {(chains) ?
+                                    chains.map((chain) => {
+                                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setActiveFromChain(chain); setSourceChainId(chain.chainId) }}>
+                                            <Image
+                                                boxSize='2rem'
+                                                borderRadius='full'
+                                                src={chain.icon}
+                                                alt={chain.name}
+                                                mr='12px'
+                                            />
+                                            <span>{chain.name}</span>
+                                        </MenuItem>
+                                    })
+                                    : <div> </div>}
+                            </MenuList>
+                        </Menu>
+                    </GridItem>
+                    <GridItem py='2'>
+                        <Center>
+                            <ArrowForwardIcon />
+                        </Center>
 
 
-            </MenuList>
-        </Menu>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                        <Menu>
+                            <MenuButton as={Button} >
+                                {(activeToChain) ? <HStack spacing={0}><Image
+
+                                    borderRadius='full'
+                                    src={activeToChain.icon}
+                                    alt={activeToChain.name}
+                                    mr='12px'
+                                /> <span>{activeToChain.name}</span></HStack> : 'Loading...'}
+                            </MenuButton>
+                            <MenuList>
+                                {(chains) ?
+                                    chains.map((chain) => {
+                                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setActiveToChain(chain); setDestinationChainId(chain.chainId) }}>
+                                            <Image
+                                                boxSize='2rem'
+                                                borderRadius='full'
+                                                src={chain.icon}
+                                                alt={chain.name}
+                                                mr='12px'
+                                            />
+                                            <span>{chain.name}</span>
+                                        </MenuItem>
+                                    })
+                                    : <div> </div>}
+
+
+                            </MenuList>
+                        </Menu>
+                    </GridItem>
+                </Grid>
+                <br />
+                <Heading size={'sm'}>Send</Heading>
+                <InputGroup>
+                    <Input></Input>
+                    <InputRightElement width='4.5rem'>
+                        <Button h='1.75rem' size='sm'>
+                            Heyy
+                        </Button>
+                    </InputRightElement>
+                </InputGroup>
+
+                <br />
+                <Heading size={'sm'}>Receive</Heading>
+                <Input></Input>
+                {/* <Grid>
+                <GridItem>
+
+                </GridItem>
+                <GridItem>
+                    
+                    </GridItem>
+            </Grid> */}
+            </Box>
+        </>
     )
 }
