@@ -1,11 +1,10 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react';
-import { Box, Button, Container, Heading, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
+import { Box, Button, Container, Grid, GridItem, Heading, Input, InputGroup, InputRightElement, Table, Tbody, Td, Tr } from '@chakra-ui/react'
 import Chains from '../components/Chains'
 import Navbar from './components/Navbar'
 import FromTokenList from '../components/FromTokenList';
 import ToTokenList from '../components/ToTokenList';
-import SendingAmount from '../components/SendingAmount'
 
 export default function PublicPage() {
 
@@ -108,21 +107,48 @@ export default function PublicPage() {
 
 
                 <Heading size={'sm'}>Send</Heading>
-                <InputGroup>
-                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setSendingAmount(e.target.value) }}></Input>
-                    <InputRightElement width='9rem'>
+                <Grid templateColumns={'repeat(6, 1fr)'}>
+                    <GridItem colSpan={3}>
+                        <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setSendingAmount(e.target.value) }}></Input>
+                    </GridItem>
+                    <GridItem colSpan={2}>
                         <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
-                    </InputRightElement>
-                </InputGroup>
-
+                    </GridItem>
+                </Grid>
                 <br />
                 <Heading size={'sm'}>Receive</Heading>
-                <InputGroup>
-                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setReceivingAmount(e.target.value) }}></Input>
-                    <InputRightElement width='9rem'>
+                <Grid templateColumns={'repeat(6, 1fr)'}>
+                    <GridItem colSpan={3}>
+                        <Input readOnly focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setReceivingAmount(e.target.value) }}></Input>
+
+                    </GridItem>
+                    <GridItem colSpan={2}>
                         <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
-                    </InputRightElement>
-                </InputGroup>
+
+                    </GridItem>
+                </Grid><br/>
+                <Box className='greyBox' w={'75%'}>
+                    <Table colorScheme='whiteAlpha'>
+            
+                        <Tbody>
+                            <Tr>
+                                <Td>Bridge Name</Td>
+                                <Td isNumeric>millimetres (mm)</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Bridge Fee</Td>
+                                <Td isNumeric>centimetres (cm)</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Gas Fee</Td>
+                                <Td isNumeric>metres (m)</Td>
+                            </Tr>
+                        </Tbody>
+           
+                    </Table>
+                </Box>
+
+
 
 
                 <Button colorScheme='teal' size='sm' onClick={getQuote}>

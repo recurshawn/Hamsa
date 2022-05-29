@@ -16,12 +16,18 @@ import {
 } from '@chakra-ui/react'
 
 function TransitionExample({ tokenList, setFromTokenAddress }) {
+    
     const [selectedToken, setSelectedToken] = useState()
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
-        tokenList &&  setSelectedToken(tokenList[0])
-    })
+        if(tokenList) {
+            setSelectedToken(tokenList[0]);
+            setFromTokenAddress(tokenList[0].address)
+        }
+        
+    }, [tokenList])
+
     return (
         <>
             {(selectedToken) ? <Button><HStack className='pseudo-btn' spacing={0} onClick={onOpen}> <Image
@@ -46,7 +52,7 @@ function TransitionExample({ tokenList, setFromTokenAddress }) {
                         <Menu>
                             {(tokenList) ?
                                 tokenList.map(token => {
-                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address) }}>
+                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address);setSelectedToken(token);  onClose(); }}>
                                         <Image
                                             boxSize='2rem'
                                             borderRadius='full'

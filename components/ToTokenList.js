@@ -11,14 +11,33 @@ import {
     Button,
     Image,
     MenuItem,
-    Menu
+    Menu,
+    HStack
 } from '@chakra-ui/react'
 
 function TransitionExample({ tokenList, setToTokenAddress }) {
+
+    const [selectedToken, setSelectedToken] = useState()
     const { isOpen, onOpen, onClose } = useDisclosure()
+
+    useEffect(() => {
+        if(tokenList) {
+            setSelectedToken(tokenList[0]);
+            setToTokenAddress(tokenList[0].address)
+        }
+        
+    }, [tokenList])
+
     return (
         <>
-            <Button onClick={onOpen}>Open Modal</Button>
+            {(selectedToken) ? <Button><HStack className='pseudo-btn' spacing={0} onClick={onOpen}> <Image
+                boxSize='2rem'
+                borderRadius='full'
+                src={selectedToken.icon}
+                alt={selectedToken.symbol}
+                mr='12px'
+            />
+                <span> {selectedToken.symbol} </span></HStack></Button> : 'Loading...'}
             <Modal
                 isCentered
                 onClose={onClose}
@@ -26,14 +45,14 @@ function TransitionExample({ tokenList, setToTokenAddress }) {
                 motionPreset='slideInBottom'
             >
                 <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
+                <ModalContent className='scrollable'>
+                    <ModalHeader>Select Token</ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody>
+                    <ModalBody >
                         <Menu>
                             {(tokenList) ?
                                 tokenList.map(token => {
-                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setToTokenAddress(token.address) }}>
+                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setToTokenAddress(token.address); setSelectedToken(token);  onClose();}}>
                                         <Image
                                             boxSize='2rem'
                                             borderRadius='full'
