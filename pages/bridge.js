@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Container, Heading, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import Chains from '../components/Chains'
 import Navbar from './components/Navbar'
@@ -15,28 +15,67 @@ export default function PublicPage() {
     const [fromTokenAddress, setFromTokenAddress] = useState();
     const [toTokenAddress, setToTokenAddress] = useState();
     const [sendingAmount, setSendingAmount] = useState();
+    const [quote, setQuote] = useState(null);
     const uniqueRoutesPerBridge = true;
     const sort = 'output';
     const singleTxOnly = true;
 
-    const getQuote = async () => {
-        console.log(walletAddress, sourceChainId, fromTokenAddress, destinationChainId, toTokenAddress, sendingAmount);
-
+    useEffect(() => {
         if (walletAddress && sourceChainId && destinationChainId && fromTokenAddress && toTokenAddress && sendingAmount) {
-            const response = await fetch(`https://api.socket.tech/v2/quote?fromChainId=${sourceChainId}&fromTokenAddress=${fromTokenAddress}&toChainId=${destinationChainId}&toTokenAddress=${toTokenAddress}&fromAmount=${sendingAmount}&userAddress=${walletAddress}&uniqueRoutesPerBridge=${uniqueRoutesPerBridge}&sort=${sort}&singleTxOnly=${singleTxOnly}`, {
-                method: 'GET',
-                headers: {
-                    'API-KEY': '645b2c8c-5825-4930-baf3-d9b997fcd88c',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
+            getQuote()
+        }
+    }, [walletAddress, sourceChainId, fromTokenAddress, destinationChainId, toTokenAddress, sendingAmount])
 
-            const json = await response.json();
-            console.log(json)
+    const getQuote = async () => {
+        const response = await fetch(`https://api.socket.tech/v2/quote?fromChainId=${sourceChainId}&fromTokenAddress=${fromTokenAddress}&toChainId=${destinationChainId}&toTokenAddress=${toTokenAddress}&fromAmount=${sendingAmount}&userAddress=${walletAddress}&uniqueRoutesPerBridge=${uniqueRoutesPerBridge}&sort=${sort}&singleTxOnly=${singleTxOnly}`, {
+            method: 'GET',
+            headers: {
+                'API-KEY': '645b2c8c-5825-4930-baf3-d9b997fcd88c',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const json = await response.json();
+        console.log('jaja', json);
+        if (json.result?.routes.length !== 0) {
+            setQuote(json.result.routes)
+            console.log(json.result);
             return json;
         }
+    }
 
+    const checkAllowance = async (chainId, owner, allowanceTarget, tokenAddress) => {
+        const response = await fetch(`https://api.socket.tech/v2/approval/check-allowance?chainID=${chainId}&owner=${owner}&allowanceTarget=${allowanceTarget}&tokenAddress=${tokenAddress}`, {
+            method: 'GET',
+            headers: {
+                'API-KEY': '645b2c8c-5825-4930-baf3-d9b997fcd88c',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const json = await response.json();
+        return json;
+    }
+
+    const getApproval = async () => {
+
+    }
+
+    const getTxData = async () => {
+
+    }
+
+    const getBridgeStatus = async () => {
+
+    }
+
+    const bridgeFunds = async () => {
+        if (quote) {
+            const route = quote[0];
+
+        }
     }
 
     const requestWallet = async () => {
@@ -59,9 +98,8 @@ export default function PublicPage() {
 
     return (
         <div>
-           
-            <Navbar connectWallet={requestWallet} walletAddress={walletAddress}/>
-         
+
+            <Navbar connectWallet={requestWallet} walletAddress={walletAddress} />
 
             <Container maxW='2xl' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
@@ -69,7 +107,7 @@ export default function PublicPage() {
                 <InputGroup>
                     <Input></Input>
                     <InputRightElement width='4.5rem'>
-                    <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
+                        <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
                     </InputRightElement>
                 </InputGroup>
 
@@ -78,15 +116,15 @@ export default function PublicPage() {
                 <InputGroup>
                     <Input></Input>
                     <InputRightElement width='4.5rem'>
-                    <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
+                        <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
                     </InputRightElement>
                 </InputGroup>
 
-                
-                
-                  <SendingAmount setSendingAmount={setSendingAmount} />
-                <Button colorScheme='teal' size='sm' onClick={getQuote}>
-                    Button
+
+
+                <SendingAmount setSendingAmount={setSendingAmount} />
+                <Button colorScheme='teal' size='sm' onClick={bridgeFunds}>
+                    Proceed
                 </Button>
             </Container>
         </div >

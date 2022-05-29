@@ -59,7 +59,7 @@ export default function FromTokenList({ sourceChainId, destinationChainId, setFr
     const [tokenList, setTokenList] = useState(null);
 
     async function getTokenList() {
-        const tokenList = await fetch(`https://api.socket.tech/v2/token-lists/from-token-list?fromChainId=${sourceChainId}&toChainId=${destinationChainId}`, {
+        const tokenList = await fetch(`https://api.socket.tech/v2/token-lists/from-token-list?fromChainId=${sourceChainId}&toChainId=${destinationChainId}&isShortList=true`, {
             method: 'GET',
             headers: {
                 'API-KEY': '645b2c8c-5825-4930-baf3-d9b997fcd88c',
