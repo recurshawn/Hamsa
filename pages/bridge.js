@@ -20,7 +20,8 @@ export default function PublicPage() {
     const [toTokenAddress, setToTokenAddress] = useState();
     const [sendingAmount, setSendingAmount] = useState();
     const [fromTokenDecimal, setFromTokenDecimal] = useState();
-    const [toTokenDecimal, setToTokenDecimals] = useState();
+    const [toTokenDecimal, setToTokenDecimal] = useState();
+    const [connect, setConnect] = useState(false);
     const [quote, setQuote] = useState(null);
     const uniqueRoutesPerBridge = true;
     const sort = 'output';
@@ -128,7 +129,7 @@ export default function PublicPage() {
         }
     }
 
-    useEffect(() => {
+    const requestWallet = async () => {
         if (window.ethereum) {
             console.log('Web3 wallet detected');
             try {
@@ -147,23 +148,26 @@ export default function PublicPage() {
         else {
             alert('No wallet detected. Please download a web3 wallet on a supported browser');
         }
-    }, [])
+    }
+
+    useEffect(() => {
+        requestWallet();
+    }, [connect])
 
 
     return (
         <div>
 
-            <Navbar connectWallet={requestWallet} walletAddress={walletAddress} />
+            <Navbar connectWallet={() => setConnect(true)} walletAddress={walletAddress} />
 
             <Container maxW='2xl' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
             </Container>
             <Container maxW='2xl'>
 
-
                 <Heading size={'sm'}>Send</Heading>
                 <InputGroup>
-                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setSendingAmount(e.target.value) }}></Input>
+                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setSendingAmount(parseInt(e.target.value, 10)) }}></Input>
                     <InputRightElement width='9rem'>
                         <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} setFromTokenDecimal={setFromTokenDecimal} />
                     </InputRightElement>
@@ -172,7 +176,7 @@ export default function PublicPage() {
                 <br />
                 <Heading size={'sm'}>Receive</Heading>
                 <InputGroup>
-                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setReceivingAmount(e.target.value) }}></Input>
+                    <Input focusBorderColor={'white.900'} placeholder='Enter Amount' onChange={(e) => { setReceivingAmount(parseInt(e.target.value, 10)) }}></Input>
                     <InputRightElement width='9rem'>
                         <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} setToTokenDecimal={setToTokenDecimal} />
                     </InputRightElement>
