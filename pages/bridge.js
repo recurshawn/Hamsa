@@ -1,16 +1,42 @@
 import { useRouter } from 'next/router'
 import { useState } from 'react';
-import { Container } from '@chakra-ui/react'
+import { Button, Container } from '@chakra-ui/react'
 import Chains from '../components/Chains'
 import FromTokenList from '../components/FromTokenList';
 import ToTokenList from '../components/ToTokenList';
-
+import SendingAmount from '../components/SendingAmount'
 
 export default function PublicPage() {
 
     const [walletAddress, setWalletAddress] = useState();
     const [sourceChainId, setSourceChainId] = useState();
     const [destinationChainId, setDestinationChainId] = useState();
+    const [fromTokenAddress, setFromTokenAddress] = useState();
+    const [toTokenAddress, setToTokenAddress] = useState();
+    const [sendingAmount, setSendingAmount] = useState();
+    const uniqueRoutesPerBridge = true;
+    const sort = 'output';
+    const singleTxOnly = true;
+
+    const getQuote = async () => {
+        console.log(walletAddress, sourceChainId, fromTokenAddress, destinationChainId, toTokenAddress, sendingAmount);
+
+        if (walletAddress && sourceChainId && destinationChainId && fromTokenAddress && toTokenAddress && sendingAmount) {
+            const response = await fetch(`https://api.socket.tech/v2/quote?fromChainId=${sourceChainId}&fromTokenAddress=${fromTokenAddress}&toChainId=${destinationChainId}&toTokenAddress=${toTokenAddress}&fromAmount=${sendingAmount}&userAddress=${walletAddress}&uniqueRoutesPerBridge=${uniqueRoutesPerBridge}&sort=${sort}&singleTxOnly=${singleTxOnly}`, {
+                method: 'GET',
+                headers: {
+                    'API-KEY': '645b2c8c-5825-4930-baf3-d9b997fcd88c',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const json = await response.json();
+            console.log(json)
+            return json;
+        }
+
+    }
 
     const requestWallet = async () => {
         if (window.ethereum) {
@@ -26,7 +52,7 @@ export default function PublicPage() {
             }
         }
         else {
-            alert('No wallet supported');
+            alert('No wallet detected. Please download a web3 wallet on a supported browser');
         }
     }
 
@@ -38,10 +64,14 @@ export default function PublicPage() {
                 <p> {walletAddress}</p>
             </div>
 
-            <Container maxW='2xl' bg='blue.600' centerContent>
+            <Container maxW='2xl' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
-                <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} />
-                <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} />
+                <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
+                <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
+                <SendingAmount setSendingAmount={setSendingAmount} />
+                <Button colorScheme='teal' size='sm' onClick={getQuote}>
+                    Button
+                </Button>
             </Container>
         </div >
     );

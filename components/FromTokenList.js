@@ -14,7 +14,7 @@ import {
     Menu
 } from '@chakra-ui/react'
 
-function TransitionExample({ tokenList }) {
+function TransitionExample({ tokenList, setFromTokenAddress }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     return (
         <>
@@ -33,7 +33,7 @@ function TransitionExample({ tokenList }) {
                         <Menu>
                             {(tokenList) ?
                                 tokenList.map(token => {
-                                    return <MenuItem minH='48px' key={token.address}>
+                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address) }}>
                                         <Image
                                             boxSize='2rem'
                                             borderRadius='full'
@@ -54,7 +54,7 @@ function TransitionExample({ tokenList }) {
     )
 }
 
-export default function FromTokenList({ sourceChainId, destinationChainId }) {
+export default function FromTokenList({ sourceChainId, destinationChainId, setFromTokenAddress }) {
 
     const [tokenList, setTokenList] = useState(null);
 
@@ -81,7 +81,7 @@ export default function FromTokenList({ sourceChainId, destinationChainId }) {
 
     return (
         <div>
-            <TransitionExample tokenList={tokenList} />
+            <TransitionExample tokenList={tokenList} setFromTokenAddress={setFromTokenAddress} />
         </div>
     )
 }
