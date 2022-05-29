@@ -7,6 +7,8 @@ import Chains from '../components/Chains'
 export default function PublicPage() {
 
     const [walletAddress, setWalletAddress] = useState();
+    const [sourceChainId, setSourceChainId] = useState();
+    const [destinationChainId, setDestinationChainId] = useState();
 
     const requestWallet = async () => {
         if (window.ethereum) {
@@ -35,7 +37,7 @@ export default function PublicPage() {
             </div>
 
             <Container maxW='2xl' bg='blue.600' centerContent>
-                <Chains />
+                <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
             </Container>
         </div >
     );

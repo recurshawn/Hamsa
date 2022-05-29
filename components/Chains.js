@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 
 
 
-export default function Chains() {
+export default function Chains({ setSourceChainId, setDestinationChainId }) {
 
     const [chains, setChains] = useState(null);
 
@@ -52,7 +52,7 @@ export default function Chains() {
             <MenuList>
                 {(chains) ?
                     chains.map((chain) => {
-                        return <MenuItem minH='48px'>
+                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setSourceChainId(chain.chainId) }}>
                             <Image
                                 boxSize='2rem'
                                 borderRadius='full'
@@ -63,9 +63,7 @@ export default function Chains() {
                             <span>{chain.name}</span>
                         </MenuItem>
                     })
-                    : <div> hi</div>}
-
-
+                    : <div> </div>}
             </MenuList>
 
             <MenuButton as={Button} >
@@ -74,7 +72,7 @@ export default function Chains() {
             <MenuList>
                 {(chains) ?
                     chains.map((chain) => {
-                        return <MenuItem minH='48px'>
+                        return <MenuItem minH='48px' key={chain.chainId} onClick={() => { setDestinationChainId(chain.chainId) }}>
                             <Image
                                 boxSize='2rem'
                                 borderRadius='full'
@@ -85,7 +83,7 @@ export default function Chains() {
                             <span>{chain.name}</span>
                         </MenuItem>
                     })
-                    : <div> hi</div>}
+                    : <div> </div>}
 
 
             </MenuList>
