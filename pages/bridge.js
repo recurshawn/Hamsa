@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { useState } from 'react';
-import { Button, Container } from '@chakra-ui/react'
+import { Button, Container, Heading, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import Chains from '../components/Chains'
 import Navbar from './components/Navbar'
 import FromTokenList from '../components/FromTokenList';
@@ -65,9 +65,26 @@ export default function PublicPage() {
 
             <Container maxW='2xl' centerContent>
                 <Chains setSourceChainId={setSourceChainId} setDestinationChainId={setDestinationChainId} />
-                <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
-                <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
-                <SendingAmount setSendingAmount={setSendingAmount} />
+                <Heading size={'sm'}>Send</Heading>
+                <InputGroup>
+                    <Input></Input>
+                    <InputRightElement width='4.5rem'>
+                    <FromTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setFromTokenAddress={setFromTokenAddress} />
+                    </InputRightElement>
+                </InputGroup>
+
+                <br />
+                <Heading size={'sm'}>Receive</Heading>
+                <InputGroup>
+                    <Input></Input>
+                    <InputRightElement width='4.5rem'>
+                    <ToTokenList sourceChainId={sourceChainId} destinationChainId={destinationChainId} setToTokenAddress={setToTokenAddress} />
+                    </InputRightElement>
+                </InputGroup>
+
+                
+                
+                  <SendingAmount setSendingAmount={setSendingAmount} />
                 <Button colorScheme='teal' size='sm' onClick={getQuote}>
                     Button
                 </Button>

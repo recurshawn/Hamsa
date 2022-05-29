@@ -23,6 +23,8 @@ import {
     InputRightElement
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
+import FromTokenList from './FromTokenList';
+import ToTokenList from './ToTokenList';
 
 export default function Chains({ setSourceChainId, setDestinationChainId }) {
 
@@ -143,19 +145,7 @@ export default function Chains({ setSourceChainId, setDestinationChainId }) {
                     </GridItem>
                 </Grid>
                 <br />
-                <Heading size={'sm'}>Send</Heading>
-                <InputGroup>
-                    <Input></Input>
-                    <InputRightElement width='4.5rem'>
-                        <Button h='1.75rem' size='sm'>
-                            Heyy
-                        </Button>
-                    </InputRightElement>
-                </InputGroup>
-
-                <br />
-                <Heading size={'sm'}>Receive</Heading>
-                <Input></Input>
+              
                 {/* <Grid>
                 <GridItem>
 
