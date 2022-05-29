@@ -20,6 +20,7 @@ input:focus {
   height: 600px;
 }
 
-.pseudo-btn {
-  border-color: grey !important;
+.greyBox {
+  border-radius: 20px;
+  background-color: rgb(224, 224, 224);
 }

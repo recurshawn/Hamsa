@@ -20,8 +20,13 @@ function TransitionExample({ tokenList, setFromTokenAddress, setFromTokenDecimal
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
-        tokenList && setSelectedToken(tokenList[0])
-    })
+        if (tokenList) {
+            setSelectedToken(tokenList[0]);
+            setFromTokenAddress(tokenList[0].address)
+        }
+
+    }, [tokenList])
+
     return (
         <>
             {(selectedToken) ? <Button><HStack className='pseudo-btn' spacing={0} onClick={onOpen}> <Image
@@ -46,7 +51,9 @@ function TransitionExample({ tokenList, setFromTokenAddress, setFromTokenDecimal
                         <Menu>
                             {(tokenList) ?
                                 tokenList.map(token => {
-                                    return <MenuItem minH='48px' key={token.address} onClick={() => { setFromTokenAddress(token.address); setFromTokenDecimal(token.decimals); }}>
+                                    return <MenuItem minH='48px' key={token.address} onClick={() => {
+                                        setFromTokenAddress(token.address); setSelectedToken(token); setFromTokenDecimal(token.decimals); onClose();
+                                    }}>
                                         <Image
                                             boxSize='2rem'
                                             borderRadius='full'
